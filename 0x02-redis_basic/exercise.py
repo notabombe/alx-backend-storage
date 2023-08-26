@@ -24,10 +24,11 @@ def call_history(method: Callable) -> Callable:
     def wrapper(self, *args, **kwargs):
         '''wrap the decorated function and return the wrapper'''
         input = str(args)
-        self._redis.rpush(method.__qualname__ + ":inputs", input)
+        self._redis.rpush(f"{method.__qualname__}:inputs", input)
         output = str(method(self, *args, **kwargs))
-        self._redis.rpush(method.__qualname__ + ":outputs", output)
+        self._redis.rpush(f"{method.__qualname__}:outputs", output)
         return output
+
     return wrapper
 
 
@@ -40,9 +41,9 @@ def replay(fn: Callable):
         c = int(c.decode("utf-8"))
     except Exception:
         c = 0
-    print("{} was called {} times:".format(func_name, c))
-    inputs = r.lrange("{}:inputs".format(func_name), 0, -1)
-    outputs = r.lrange("{}:outputs".format(func_name), 0, -1)
+    print(f"{func_name} was called {c} times:")
+    inputs = r.lrange(f"{func_name}:inputs", 0, -1)
+    outputs = r.lrange(f"{func_name}:outputs", 0, -1)
     for inp, outp in zip(inputs, outputs):
         try:
             inp = inp.decode("utf-8")
@@ -52,7 +53,7 @@ def replay(fn: Callable):
             outp = outp.decode("utf-8")
         except Exception:
             outp = ""
-        print("{}(*{}) -> {}".format(func_name, inp, outp))
+        print(f"{func_name}(*{inp}) -> {outp}")
 
 
 class Cache:

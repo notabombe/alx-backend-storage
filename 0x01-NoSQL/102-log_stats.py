@@ -9,14 +9,14 @@ def nginx_stats_check():
     collection = client.logs.nginx
 
     num_of_docs = collection.count_documents({})
-    print("{} logs".format(num_of_docs))
+    print(f"{num_of_docs} logs")
     print("Methods:")
     methods_list = ["GET", "POST", "PUT", "PATCH", "DELETE"]
     for method in methods_list:
         method_count = collection.count_documents({"method": method})
-        print("\tmethod {}: {}".format(method, method_count))
+        print(f"\tmethod {method}: {method_count}")
     status = collection.count_documents({"method": "GET", "path": "/status"})
-    print("{} status check".format(status))
+    print(f"{status} status check")
 
     print("IPs:")
 
@@ -38,7 +38,7 @@ def nginx_stats_check():
     for top_ip in top_IPs:
         count = top_ip.get("count")
         ip_address = top_ip.get("ip")
-        print("\t{}: {}".format(ip_address, count))
+        print(f"\t{ip_address}: {count}")
 
 
 if __name__ == "__main__":
